@@ -1,4 +1,5 @@
 const addToCartLocator=require("./addToCartLocator");
+const utility = require("../../utility/utility");
 class AddToCartAction{
     async clickOnProductFromList (productName){
         await addToCartLocator.productFromList(productName).click();
@@ -19,6 +20,11 @@ class AddToCartAction{
     }
     async clickOnViewCartButton(){
         await addToCartLocator.buttonViewCartFrom.click();
+    }
+    async getSingleProuctPrice(){
+        const productPrice = await addToCartLocator.PriceFromproductPage.getText();
+        const productPriceIntoNumber = await utility.convertTextToNumber(productPrice);
+        return productPriceIntoNumber;
     }
 
 }

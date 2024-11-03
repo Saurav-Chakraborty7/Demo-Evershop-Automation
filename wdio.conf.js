@@ -1,5 +1,5 @@
 const productPurchase = "./test/spec/productPurchase.spec.js";
-const auth="./test/spec/auth.spec.js";
+const auth = "./test/spec/auth.spec.js";
 
 exports.config = {
   //
@@ -26,9 +26,8 @@ exports.config = {
   specs: [auth, productPurchase],
 
   suites: {
-    purchase:[ [auth, productPurchase]
-  ],
-  },  
+    purchase: [[auth, productPurchase]],
+  },
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
@@ -133,6 +132,16 @@ exports.config = {
   // The only one supported by default is 'dot'
   // see also: https://webdriver.io/docs/dot-reporter
   // reporters: ['dot'],
+  reporters: [
+    [
+      "allure",
+      {
+        outputDir: "allure-results",
+        disableWebdriverStepsReporting: false,
+        disableWebdriverScreenshotsReporting: false,
+      },
+    ],
+  ],
 
   // Options to be passed to Mocha.
   // See the full list at http://mochajs.org/
@@ -237,16 +246,24 @@ exports.config = {
    * @param {boolean} result.passed    true if test has passed, otherwise false
    * @param {object}  result.retries   information about spec related retries, e.g. `{ attempts: 0, limit: 0 }`
    */
-  // afterTest: function(test, context, { error, result, duration, passed, retries }) {
-  // },
+  afterTest: async function(test, context, { error, result, duration, passed, retries }) {
+    if (error) {
+      const screenshot = await browser.takeScreenshot();
+      allure.addAttachment(
+        "Screenshot",
+        Buffer.from(screenshot, "base64"),
+        "failure/png"
+      );
+    }
+  },
 
   /**
    * Hook that gets executed after the suite has ended
    * @param {object} suite suite details
    */
-  afterSuite: async function (suite) {
-    await browser.quit()
-  },
+  // afterSuite: async function (suite) {
+
+  // },
   /**
    * Runs after a WebdriverIO command gets executed
    * @param {string} commandName hook command name
@@ -271,8 +288,9 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that ran
    */
-  // afterSession: function (config, capabilities, specs) {
-  // },
+  afterSession: async function (config, capabilities, specs) {
+    await browser.quit();
+  },
   /**
    * Gets executed after all workers got shut down and the process is about to exit. An error
    * thrown in the onComplete hook will result in the test run failing.

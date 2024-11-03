@@ -26,7 +26,7 @@ describe("Demo evershop site automation", () => {
 
     it("Should successfully verify total amount and grand total amount", async()=>{
         singleProductPrice = await addToCartAction.getSingleProuctPrice();
-        const expectedTotalPrice= qty*singleProductPrice;
+        const expectedTotalPrice= 9*singleProductPrice;
         const actualSubTotal = await checkOutAction.getSubTotalAmount();
         const actualGrandTotal = await checkOutAction.getGrandTotalAmount();
         expect(expectedTotalPrice).toEqual(actualSubTotal);
